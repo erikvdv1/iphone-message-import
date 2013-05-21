@@ -62,12 +62,30 @@ namespace Infiks.IPhone
         /// <param name="args">The arguments. The first is the input file path, the second argument is the database path.</param>
         public static void Main(string[] args)
         {
+            // Check arguments
+            if (args.Length > 0 && (args.Length != 2 || args[0] == "/?"))
+            {
+                WriteHelp();
+                return;
+            }
+
             // Get locations
             _inputLocation = args.Length > 0 ? args[0] : DefaultInputLocation;
             _dbLocation = args.Length > 1 ? args[1] : DefaultDbLocation;
 
             Import();
             Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Writes the help text for commandline users.
+        /// </summary>
+        private static void WriteHelp()
+        {
+            String assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+            Console.WriteLine("Imports tab-separated text messages into the text message database of an iPhone backup.");
+            Console.WriteLine();
+            Console.WriteLine(@"{0} [drive:\path\to\input\file drive:\path\to\database\file]", assemblyName);
         }
 
         /// <summary>
