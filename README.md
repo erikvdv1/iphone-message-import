@@ -11,3 +11,12 @@ Requirements
 
 Usage
 -----
+`iPhoneMessageImport.exe [input file] [database file]`
+
+Input format
+------------
+The input file is a tab-separated file. Each row corresponds to a text message.
+
+`[timestamp]   [phone no]   [send/received]   [text content]`
+
+Check out this [sample](iPhoneMessageImport/sample/input.txt) for the input format.
