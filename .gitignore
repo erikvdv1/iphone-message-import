@@ -59,8 +59,10 @@ _ReSharper*
 *.ncrunch*
 .*crunch*.local.xml
 
-# Installshield output folder 
-[Ee]xpress
+# Installshield output folder
+[Ss]ingle[Ii]mage/
+[Dd][Vv][Dd]-5/
+[Ii]nterm/
 
 # DocProject is a documentation generator add-in
 DocProject/buildhelp/
@@ -94,12 +96,15 @@ AppPackages/
 sql
 TestResults
 [Tt]est[Rr]esult*
-*.Cache
+*.[Cc]ache
 ClientBin
 [Ss]tyle[Cc]op.*
 ~$*
 *.dbmdl
 Generated_Code #added for RIA/Silverlight projects
+
+# OS junk files
+[Tt]humbs.db
 
 # Backup & report files from converting an old project file to a newer
 # Visual Studio version. Backup files are not needed, because we have git ;-)
