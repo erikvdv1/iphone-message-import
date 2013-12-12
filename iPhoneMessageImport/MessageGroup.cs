@@ -36,12 +36,12 @@ namespace Infiks.IPhone
         /// <summary>
         /// The country code of this group.
         /// </summary>
-        public string CountryCode { get { return _countryCode == "" ? _countryCode = GetCountryCode() : _countryCode; } }
+        public CountryCode CountryCode { get { return GetCountryCode(); } }
 
         /// <summary>
         /// The number of the sender/receiver.
         /// </summary>
-        public string Address { get { return _address == "" ? _address = GetAddress() : _address; } }
+        public string Address { get { return GetAddress(); } }
 
         /// <summary>
         /// The number of incoming messages in this group.
@@ -54,33 +54,18 @@ namespace Infiks.IPhone
         public int OutgoingCount { get { return (from m in _messages where m.Type == MessageType.Outgoing select m).Count(); } }
 
         /// <summary>
-        /// Offset in seconds between message that are considered to be in the same group (0 = unlimited).
-        /// </summary>
-        private const int Offset = 0;
-
-        /// <summary>
         /// A private variable that holds the messages of this group.
         /// </summary>
         private readonly List<Message> _messages = new List<Message>();
 
         /// <summary>
-        /// A private variable that holds the country code of this group.
-        /// </summary>
-        private string _countryCode = "";
-
-        /// <summary>
-        /// A private variable that holds the number of the sender/receiver.
-        /// </summary>
-        private string _address = "";
-
-        /// <summary>
         /// Gets the country code of the first message.
         /// </summary>
         /// <returns>The country code.</returns>
-        private string GetCountryCode()
+        private CountryCode GetCountryCode()
         {
             Message message = this.FirstOrDefault();
-            return message != null ? message.CountryCode : "";
+            return message != null ? message.CountryCode : CountryCode.XX;
         }
 
         /// <summary>
@@ -91,6 +76,21 @@ namespace Infiks.IPhone
         {
             Message message = this.FirstOrDefault();
             return message != null ? message.Address : "";
+        }
+
+        /// <summary>
+        /// Create a new empty group of messages.
+        /// </summary>
+        public MessageGroup()
+        { }
+
+        /// <summary>
+        /// Create a new group of messages.
+        /// </summary>
+        /// <param name="messages">The messages.</param>
+        public MessageGroup(IEnumerable<Message> messages)
+        {
+            _messages.AddRange(messages);
         }
 
         /// <summary>
@@ -109,49 +109,8 @@ namespace Infiks.IPhone
         /// <returns>The resulting groups.</returns>
         public static IEnumerable<MessageGroup> CreateGroupsFromMessages(IEnumerable<Message> messages)
         {
-            // Create new list ans sort on ascending date.
-            var messageList = new List<Message>(messages);
-            messageList.Sort();
-
-            var groups = new List<MessageGroup>();
-
-            while (messageList.FirstOrDefault() != null)
-            {
-                // Create the group
-                var group = new MessageGroup();
-                groups.Add(group);
-
-                // Add the first (and maybe the only) message to the group
-                var mainMessage = messageList.First();
-                group.Add(mainMessage);
-                messageList.Remove(mainMessage);
-
-                // Keep date for tracking message in the same conversation
-                var date = mainMessage.Date;
-
-                // Loop through other messages
-                var i = 0;
-                var message = messageList.ElementAtOrDefault(i);
-
-                // Check if there are more messages within the date offset
-                while (message != null && (message.Date <= date + Offset || Offset == 0))
-                {
-                    if (message.Address == mainMessage.Address)
-                    {
-                        // Message does belong to the group
-                        group.Add(message);
-                        messageList.Remove(message);
-                        date = message.Date;
-                        message = messageList.ElementAtOrDefault(i);
-                    }
-                    else
-                    {
-                        // Message does not belong to the group
-                        message = messageList.ElementAtOrDefault(++i);
-                    }
-                }
-            }
-            return groups;
+            // Create new groups
+            return from m in messages group m by m.Address into g select new MessageGroup(g);
         }
 
         /// <summary>

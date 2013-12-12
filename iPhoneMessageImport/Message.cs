@@ -40,9 +40,9 @@ namespace Infiks.IPhone
         public string Address { get; private set; }
 
         /// <summary>
-        /// The timestamp of the message.
+        /// The timestamp of the message since Unix Epoch (01-01-1970).
         /// </summary>
-        public int Date { get; private set; }
+        public int Timestamp { get; private set; }
 
         /// <summary>
         /// The content of the message.
@@ -57,22 +57,44 @@ namespace Infiks.IPhone
         /// <summary>
         /// The country code of the sender/receiver number.
         /// </summary>
-        public string CountryCode
+        public CountryCode CountryCode
         {
             get { return GetCountryCode(Address); }
+        }
+
+        /// <summary>
+        /// The date of the message.
+        /// </summary>
+        public DateTime Date
+        {
+            get
+            {
+                return new DateTime(1970, 1, 1).AddSeconds(Timestamp);
+            }
+        }
+
+        /// <summary>
+        /// The timestamp of the message since Apple Epoch (01-01-2001).
+        /// </summary>
+        public int AppleTimestamp
+        {
+            get
+            {
+                return Timestamp - 978307200;
+            }
         }
 
         /// <summary>
         /// Creates a single Message with the specified values.
         /// </summary>
         /// <param name="address">The phone number</param>
-        /// <param name="date">The date in unix timestamp format</param>
+        /// <param name="timestamp">The date in unix timestamp format</param>
         /// <param name="text">The contents</param>
         /// <param name="type">The message type</param>
-        public Message(string address, int date, string text, MessageType type)
+        public Message(string address, int timestamp, string text, MessageType type)
         {
             Address = address;
-            Date = date;
+            Timestamp = timestamp;
             Text = text;
             Type = type;
         }
@@ -80,11 +102,11 @@ namespace Infiks.IPhone
         /// <summary>
         /// Creates a Message from a data row
         /// </summary>
-        /// <param name="row">The data row. It must have the following four columns: Address, Date, Text, Type</param>
+        /// <param name="row">The data row. It must have the following four columns: Address, Timestamp, Text, Type</param>
         public Message(DataRow row)
         {
             Address = row["Address"] as string;
-            Date = Int32.Parse(row["Date"] as string);
+            Timestamp = Int32.Parse(row["Timestamp"] as string);
             Text = row["Text"] as string;
             Type = ConvertType(row["Type"] as string);
         }
@@ -92,7 +114,7 @@ namespace Infiks.IPhone
         /// <summary>
         /// Converts the data rows to a list of Messages
         /// </summary>
-        /// <param name="rows">The data rows</param>
+        /// <param name="table">The data table</param>
         /// <returns>The list of Messages.</returns>
         public static List<Message> FromDataTable(DataTable table)
         {
@@ -103,13 +125,12 @@ namespace Infiks.IPhone
         /// Determines the language from the phone number.
         /// </summary>
         /// <example>
-        /// +31612345678 is a Dutch number, the return value is: "nl".
+        /// +31612345678 is a Dutch number, the return value is: "NL".
         /// </example>
         /// <param name="address">The phone number</param>
         /// <returns>The corresponding country code</returns>
-        private static string GetCountryCode(string address)
+        private static CountryCode GetCountryCode(string address)
         {
-            string code;
             switch (address.Substring(0, 3))
             {
                 case "+10":
@@ -122,34 +143,24 @@ namespace Infiks.IPhone
                 case "+17":
                 case "+18":
                 case "+19":
-                    code = "us";
-                    break;
+                    return CountryCode.US;
                 case "+31":
-                    code = "nl";
-                    break;
+                    return CountryCode.NL;
                 case "+32":
-                    code = "be";
-                    break;
+                    return CountryCode.BE;
                 case "+33":
-                    code = "fr";
-                    break;
+                    return CountryCode.FR;
                 case "+34":
-                    code = "es";
-                    break;
+                    return CountryCode.ES;
                 case "+39":
-                    code = "it";
-                    break;
+                    return CountryCode.IT;
                 case "+44":
-                    code = "uk";
-                    break;
+                    return CountryCode.UK;
                 case "+49":
-                    code = "de";
-                    break;
+                    return CountryCode.DE;
                 default:
-                    code = "";
-                    break;
+                    return CountryCode.XX;
             }
-            return code;
         }
 
         /// <summary>
@@ -176,15 +187,15 @@ namespace Infiks.IPhone
         }
 
         /// <summary>
-        /// Compares two messages to each other. The messages are compared on their date values.
+        /// Compares two messages to each other. The messages are compared on their timestamp values.
         /// </summary>
         /// <param name="other">The other message.</param>
         /// <returns>0 when the two message are sent at the same time</returns>
         public int CompareTo(Message other)
         {
             if (other == null) return 1;
-            if (this.Date > other.Date) return 1;
-            if (this.Date < other.Date) return  -1;
+            if (Timestamp > other.Timestamp) return 1;
+            if (Timestamp < other.Timestamp) return  -1;
             return 0;
         }
     }
@@ -194,8 +205,24 @@ namespace Infiks.IPhone
     /// </summary>
     public enum MessageType
     {
-        Unknown  = 0,
+        Unknown = 0,
         Incoming = 2,
         Outgoing = 3
+    }
+
+    /// <summary>
+    /// Code for indicating a country.
+    /// </summary>
+    public enum CountryCode
+    {
+        XX,
+        BE,
+        DE,
+        ES,
+        FR,
+        IT,
+        NL,
+        UK,
+        US,
     }
 }

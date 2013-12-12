@@ -39,12 +39,12 @@ namespace Infiks.IPhone
         /// <summary>
         /// The default location for the input file.
         /// </summary>
-        private const string DefaultInputLocation = "../../sample/input.txt";
+        private const string DefaultInputLocation = @"sample/input.txt";
 
         /// <summary>
         /// The default location for the output (database) file.
         /// </summary>
-        private const string DefaultDbLocation = "sms.db";
+        private const string DefaultDbLocation = @"sample/sms.db";
 
         /// <summary>
         /// The actual input location.
@@ -94,14 +94,14 @@ namespace Infiks.IPhone
         private static void Import()
         {
             // Read input
-            Console.WriteLine("Reading input...");
+            Console.WriteLine("Reading messages...");
             IEnumerable<Message> messages = Message.FromDataTable(ReadInput(_inputLocation));
             Console.WriteLine("{0} messages", messages.Count());
 
             // Create groups
-            Console.WriteLine("Creating groups...");
-            IEnumerable<MessageGroup> groups = MessageGroup.CreateGroupsFromMessages(messages);
-            Console.WriteLine("{0} groups", groups.Count());
+            Console.WriteLine("Grouping messages...");
+            IList<MessageGroup> groups = MessageGroup.CreateGroupsFromMessages(messages).ToList();
+            Console.WriteLine("{0} groups", groups.Count);
 
             // Check if database exists
             if (!File.Exists(_dbLocation))
@@ -137,7 +137,6 @@ namespace Infiks.IPhone
                 Console.WriteLine("Triggers restored");
             }
             Console.WriteLine("Done!");
-            Console.ReadLine();
         }
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace Infiks.IPhone
         public static DataTable ReadInput(string fileName)
         {
             var dt = new DataTable();
-            dt.Columns.Add("Date", typeof(string));
+            dt.Columns.Add("Timestamp", typeof(string));
             dt.Columns.Add("Address", typeof(string));
             dt.Columns.Add("Type", typeof(string));
             dt.Columns.Add("Text", typeof(string));
