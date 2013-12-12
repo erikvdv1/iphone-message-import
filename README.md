@@ -7,7 +7,10 @@ This backup can then be restored to the iPhone with iTunes.
 Requirements
 ------------
 * [iBackupBot for iTunes](http://www.icopybot.com/itunes-backup-manager.htm), for extracting and replacing the SMS database (SQLite) in an iPhone backup.
-* [ADO.NET 2.0 Provider for SQLite](http://sourceforge.net/projects/sqlite-dotnet2/), libraries for communicating with a SQLite database from C#.
+
+Building
+--------
+Clone this repo and reinstall all NuGet packages to download the correct SQLite libraries. Run the following command in the Package Manager Console: `Update-Package -reinstall`
 
 Usage
 -----
@@ -17,6 +20,12 @@ Input format
 ------------
 The input file is a tab-separated file. Each row corresponds to a text message.
 
-`[timestamp]   [phone no]   [send/received]   [text content]`
+`[timestamp]\t[phone no]\t[send/received]\t[text content]`
 
 Check out this [sample](iPhoneMessageImport/sample/input.txt) for the input format.
+
+FAQ
+--------
+*Error: Could not copy the file "iPhoneMessageImport\\[x86|x64]\SQLite.Interop.dll" because it was not found.*
+
+Run the following command in the Package Manager Console to place the correct SQLite libraries `Update-Package -reinstall`.
