@@ -54,6 +54,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmsDatabase.cs" />
+    <Compile Include="Transaction.cs" />
     <Compile Include="Trigger.cs" />
   </ItemGroup>
   <ItemGroup>

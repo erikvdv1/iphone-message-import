@@ -114,6 +114,7 @@ namespace Infiks.IPhone
             int outgoingCount = 0;
             int incomingCount = 0;
             using (var db = new SmsDatabase(_dbLocation))
+            using (var transaction = db.BeginTransaction())
             {
                 // Dropping triggers
                 db.DropTriggers();
@@ -135,6 +136,9 @@ namespace Infiks.IPhone
                 // Restore triggers
                 db.CreateTriggers();
                 Console.WriteLine("Triggers restored");
+
+                // Commit
+                transaction.Commit();
             }
             Console.WriteLine("Done!");
         }
