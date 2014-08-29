@@ -83,7 +83,7 @@ namespace Infiks.IPhone
         /// <summary>
         /// The triggers defined in this database.
         /// </summary>
-        public IEnumerable<SQLiteTrigger> Triggers { get; private set; }
+        public IEnumerable<Trigger> Triggers { get; private set; }
 
         /// <summary>
         /// The SQLite connection of the database.
@@ -232,11 +232,11 @@ namespace Infiks.IPhone
         /// Gets all triggers associated with this database.
         /// </summary>
         /// <returns>The SQLite triggers.</returns>
-        private IEnumerable<SQLiteTrigger> GetTriggers()
+        private IEnumerable<Trigger> GetTriggers()
         {
             string sql = String.Format("SELECT name, sql FROM {0} WHERE type = '{1}'", "SQLITE_MASTER", "trigger");
             DataTable table = GetDataTable(sql);
-            return from DataRow row in table.Rows select new SQLiteTrigger(row["name"] as string, row["sql"] as string);
+            return from DataRow row in table.Rows select new Trigger(row["name"] as string, row["sql"] as string);
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Infiks.IPhone
         /// </summary>
         public void DropTriggers()
         {
-            foreach (SQLiteTrigger trigger in Triggers)
+            foreach (Trigger trigger in Triggers)
             {
                 Query(trigger.DeleteStatement);
             }
@@ -281,10 +281,19 @@ namespace Infiks.IPhone
         /// </summary>
         public void CreateTriggers()
         {
-            foreach (SQLiteTrigger trigger in Triggers)
+            foreach (Trigger trigger in Triggers)
             {
                 Query(trigger.CreateStatement);
             }
+        }
+
+        /// <summary>
+        /// Creates a new transaction if one isn't already active on the connection.
+        /// </summary>
+        /// <returns>The new transaction object.</returns>
+        public Transaction BeginTransaction()
+        {
+            return new Transaction(_connection.BeginTransaction());
         }
 
         /// <summary>

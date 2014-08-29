@@ -1,5 +1,5 @@
 ﻿#region License
-// <copyright file="SQLiteTrigger.cs" company="Infiks">
+// <copyright file="Trigger.cs" company="Infiks">
 // 
 // iPhone Message Import, imports messages into a backup of your iPhone.
 // Copyright (c) 2013 Infiks
@@ -29,7 +29,7 @@ namespace Infiks.IPhone
     /// <summary>
     /// This class represents a SQL trigger.
     /// </summary>
-    public class SQLiteTrigger
+    public class Trigger
     {
         /// <summary>
         /// The name of the trigger.
@@ -51,7 +51,7 @@ namespace Infiks.IPhone
         /// </summary>
         /// <param name="name">The name of the trigger.</param>
         /// <param name="sql">The SQL query that creates this trigger.</param>
-        public SQLiteTrigger(string name, string sql)
+        public Trigger(string name, string sql)
         {
             Name = name;
             CreateStatement = sql;
